@@ -37,7 +37,8 @@ SQL-lowerable subset, not every managed-runtime feature.
 
 ## Build, test, release
 
-`cargo test` includes an actual default Iceberg load (network access on first run).
+`cargo test` includes an actual default Iceberg load and scan of an empty Iceberg v2 table
+(network access on first run).
 `cargo build --release` bundles DuckDB. A matching external DuckDB library can be
 used for development with `DUCKDB_LIB_DIR` and `--no-default-features`.
 The tag-triggered workflow builds Linux/macOS binaries, tests each platform,
