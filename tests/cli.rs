@@ -51,7 +51,7 @@ fn invalid_arguments_fail() {
 fn default_iceberg_load_is_real() {
     // CI and release smoke tests deliberately exercise signed extension installation.
     let setup = std::env::temp_dir().join(format!("orchiddb-iceberg-{}.sql", std::process::id()));
-    std::fs::write(&setup, "CREATE VIEW people AS SELECT 1::BIGINT id, CASE WHEN loaded THEN 'Iceberg loaded' ELSE error('Iceberg missing') END name FROM duckdb_extensions() WHERE extension_name='iceberg' AND iceberg_bucket(16, 'duckdb') >= 0;").unwrap();
+    std::fs::write(&setup, "CREATE VIEW people AS SELECT 1::BIGINT id, CASE WHEN loaded THEN 'Iceberg loaded' ELSE error('Iceberg missing') END AS name FROM duckdb_extensions() WHERE extension_name='iceberg' AND iceberg_bucket(16, 'duckdb') >= 0;").unwrap();
     let output = cli(&[
         "query",
         "examples/people.json",
