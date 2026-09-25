@@ -1,0 +1,73 @@
+name: Release
+on:
+  push:
+    tags: ['v[0-9]*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag
+        required: true
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            platform: linux-x86_64
+          - os: macos-14
+            platform: macos-aarch64
+          - os: macos-15-intel
+            platform: macos-x86_64
+    runs-on: ${{ matrix.os }}
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      RUST_MIN_STACK: 16777216
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate release version
+        run: python -c 'import os,tomllib; assert os.environ["RELEASE_TAG"] == "v" + tomllib.load(open("Cargo.toml","rb"))["package"]["version"]'
+      - run: cargo test --locked
+      - run: cargo build --locked --release
+      - name: Package executable
+        run: |
+          mkdir -p dist/package
+          cp target/release/orchiddb LICENSE.md README.md dist/package/
+          cp -R examples dist/package/
+          tar -czf "dist/orchiddb-${RELEASE_TAG}-${{ matrix.platform }}.tar.gz" -C dist/package .
+          rm -rf dist/package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.platform }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+  release:
+    needs: build
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          merge-multiple: true
+          path: dist
+      - name: Create draft release
+        shell: bash
+        run: |
+          cd dist
+          sha256sum *.tar.gz > SHA256SUMS
+          gh release create "$RELEASE_TAG" *.tar.gz SHA256SUMS --verify-tag --draft --title "$RELEASE_TAG" --notes 'Validated release artifacts. See repository README for setup and dependency ownership.'
