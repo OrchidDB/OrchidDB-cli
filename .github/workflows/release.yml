@@ -69,5 +69,5 @@ jobs:
         shell: bash
         run: |
           cd dist
-          sha256sum *.tar.gz > SHA256SUMS
-          gh release create "$RELEASE_TAG" *.tar.gz SHA256SUMS --verify-tag --draft --title "$RELEASE_TAG" --notes 'Validated release artifacts. See repository README for setup and dependency ownership.'
+          sha256sum ./*.tar.gz > SHA256SUMS
+          gh release create "$RELEASE_TAG" ./*.tar.gz SHA256SUMS --verify-tag --draft --title "$RELEASE_TAG" --notes 'Validated release artifacts. See repository README for setup and dependency ownership.'
