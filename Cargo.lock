@@ -1372,7 +1372,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2218,7 +2218,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 [[package]]
 name = "orchiddb"
 version = "0.1.0"
-source = "git+https://github.com/OrchidDB/OrchidDB.git?rev=2280d26134ce0cd6abc9f76876061ece95b806a5#2280d26134ce0cd6abc9f76876061ece95b806a5"
+source = "git+https://github.com/OrchidDB/OrchidDB.git?rev=18ad70a9ad461e126a739b5c99f10c13622f33e6#18ad70a9ad461e126a739b5c99f10c13622f33e6"
 dependencies = [
  "antlr4rust",
  "arrow",
@@ -2263,7 +2263,7 @@ dependencies = [
 [[package]]
 name = "orchiddb-client"
 version = "0.1.0"
-source = "git+https://github.com/OrchidDB/OrchidDB-rust.git?rev=157ab37d66ae922798d968d876a81dc7db1679e9#157ab37d66ae922798d968d876a81dc7db1679e9"
+source = "git+https://github.com/OrchidDB/OrchidDB-rust.git?rev=77b2f23a65470c7d118deba94f6739b510634fe2#77b2f23a65470c7d118deba94f6739b510634fe2"
 dependencies = [
  "arrow",
  "orchiddb",
@@ -2292,7 +2292,7 @@ checksum = "4be15186205eb60ddbdc2fb47cb25df472c7f399bbe119b68c0972b6b6dd46ea"
 dependencies = [
  "oxilangtag",
  "oxiri",
- "rand 0.9.5",
+ "rand 0.8.8",
  "thiserror",
 ]
 
@@ -2508,7 +2508,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2771,7 +2771,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2784,7 +2784,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3098,7 +3098,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.5",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3544,7 +3544,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3617,15 +3617,6 @@ name = "windows-sys"
 version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d"
-dependencies = [
- "windows-targets",
-]
-
-[[package]]
-name = "windows-sys"
-version = "0.59.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e38bc4d79ed67fd075bcc251a1c39b32a1776bbe92e5bef1f0bf1f8c531853b"
 dependencies = [
  "windows-targets",
 ]
