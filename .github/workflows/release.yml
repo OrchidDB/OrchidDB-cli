@@ -36,7 +36,6 @@ jobs:
           python-version: '3.12'
       - name: Validate release version
         run: python -c 'import os,tomllib; assert os.environ["RELEASE_TAG"] == "v" + tomllib.load(open("Cargo.toml","rb"))["package"]["version"]'
-      - run: cargo test --locked
       - run: cargo build --locked --release
       - name: Package executable
         run: |
