@@ -16,7 +16,7 @@ default = ["bundled"]
 bundled = ["duckdb/bundled"]
 
 [dependencies]
-orchiddb-client = { git = "https://github.com/OrchidDB/OrchidDB-rust.git", rev = "8c6312414da3cfdd6075097dd0dde46ffc596e43", default-features = false }
+orchiddb-client = { git = "https://github.com/OrchidDB/OrchidDB-rust.git", rev = "157ab37d66ae922798d968d876a81dc7db1679e9", default-features = false }
 duckdb = "=1.10502.0"
 arrow = { version = "58.2.0", features = ["ipc", "prettyprint"] }
 serde_json = "1"
