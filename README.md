@@ -44,6 +44,27 @@ used for development with `DUCKDB_LIB_DIR` and `--no-default-features`.
 The tag-triggered workflow builds Linux/macOS binaries, tests each platform,
 validates the version, and creates a draft GitHub release with checksums.
 No registry credentials are needed beyond the repository Actions token.
-Crates.io publication is disabled until core and its modified vendored parser
-can be published as versioned dependencies. Source Git dependencies are pinned.
+The CLI is distributed through GitHub Releases only; crates.io publication is
+disabled. Source Git dependencies are pinned.
 The existing OrchidDB license applies; see LICENSE.md.
+
+## Generate statistics once
+
+```sh
+orchiddb statistics examples/people.json --init examples/setup.sql \
+  --no-iceberg --output statistics.json
+orchiddb compile examples/people.json --statistics statistics.json --explain-json
+orchiddb query examples/people.json --statistics statistics.json \
+  --init examples/setup.sql --no-iceberg --format table
+```
+
+`statistics` uses the application-configured DuckDB session to execute bounded
+collection requests selected by the shared core. The adapter enforces deadlines
+through DuckDB interruption, and caps returned rows and bytes. The command saves
+a portable snapshot and prints the coverage report. Generate it again when data
+changes; there is no background refresh or collection profile configuration.
+
+`--statistics` installs the snapshot for compilation. Without it behavior is
+unchanged. `compile --explain-json` prints full plans and diagnostics; on `query`,
+`--explain-json` writes diagnostics to stderr while preserving result stdout.
+Compilation from a saved snapshot does not open the database.

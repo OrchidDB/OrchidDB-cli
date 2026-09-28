@@ -68,3 +68,49 @@ fn default_iceberg_load_is_real() {
     );
     assert!(String::from_utf8_lossy(&output.stdout).contains("Iceberg loaded"));
 }
+
+#[test]
+fn one_time_statistics_can_be_saved_and_used_without_a_database() {
+    let path =
+        std::env::temp_dir().join(format!("orchiddb-statistics-{}.json", std::process::id()));
+    let generated = cli(&[
+        "statistics",
+        "examples/people.json",
+        "--init",
+        "examples/setup.sql",
+        "--no-iceberg",
+        "--output",
+        path.to_str().unwrap(),
+    ]);
+    assert!(
+        generated.status.success(),
+        "{}",
+        String::from_utf8_lossy(&generated.stderr)
+    );
+    let snapshot: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert!(snapshot.is_object());
+    assert_eq!(snapshot["sources"]["people"]["sample_rows"], 2);
+    assert!(
+        snapshot["report"]["skipped"]
+            .as_object()
+            .unwrap()
+            .is_empty()
+    );
+    let compiled = cli(&[
+        "compile",
+        "examples/people.json",
+        "--statistics",
+        path.to_str().unwrap(),
+        "--explain-json",
+    ]);
+    std::fs::remove_file(path).unwrap();
+    assert!(
+        compiled.status.success(),
+        "{}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
+    let plan: serde_json::Value = serde_json::from_slice(&compiled.stdout).unwrap();
+    assert!(plan.get("statistics_usage").is_some());
+    assert!(plan.get("plan_estimates").is_some());
+}
