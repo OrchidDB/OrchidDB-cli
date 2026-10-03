@@ -1,76 +1,84 @@
-name: Release
+name: Build CLI release
+run-name: cli ${{ inputs.request_id }} ${{ inputs.tag }} ${{ inputs.platform }}
 on:
-  push:
-    tags: ['v[0-9]*']
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing version tag
+        description: Immutable version tag to build
         required: true
+        type: string
+      platform:
+        description: Build only this platform; completed platforms are retained
+        type: choice
+        default: all
+        options:
+        - all
+        - linux-x86_64
+        - macos-aarch64
+        - macos-x86_64
+      request_id:
+        description: Coordinator id for safe resume and dispatch recovery
+        type: string
+        default: ''
 permissions:
   contents: read
+concurrency:
+  group: cli-${{ inputs.tag }}-${{ inputs.platform }}
+  cancel-in-progress: false
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-22.04
-            platform: linux-x86_64
-          - os: macos-14
-            platform: macos-aarch64
-          - os: macos-15-intel
-            platform: macos-x86_64
+        include: ${{ fromJSON(inputs.platform == 'linux-x86_64' && '[{"os":"ubuntu-22.04","platform":"linux-x86_64"}]' || inputs.platform == 'macos-aarch64'
+          && '[{"os":"macos-14","platform":"macos-aarch64"}]' || inputs.platform == 'macos-x86_64' && '[{"os":"macos-15-intel","platform":"macos-x86_64"}]'
+          || '[{"os":"ubuntu-22.04","platform":"linux-x86_64"},{"os":"macos-14","platform":"macos-aarch64"},{"os":"macos-15-intel","platform":"macos-x86_64"}]')
+          }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     env:
       CARGO_BUILD_JOBS: 2
-      CARGO_PROFILE_DEV_DEBUG: 0
-      RUST_MIN_STACK: 16777216
-      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: refs/tags/${{ inputs.tag || github.ref_name }}
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Validate release version
-        run: python -c 'import os,tomllib; assert os.environ["RELEASE_TAG"] == "v" + tomllib.load(open("Cargo.toml","rb"))["package"]["version"]'
-      - uses: Swatinem/rust-cache@v2
-        with:
-          cache-on-failure: true
-      - run: cargo build --locked --release
-      - name: Package executable
-        run: |
-          mkdir -p dist/package
-          cp target/release/orchiddb LICENSE.md README.md dist/package/
-          cp -R examples dist/package/
-          tar -czf "dist/orchiddb-${RELEASE_TAG}-${{ matrix.platform }}.tar.gz" -C dist/package .
-          rm -rf dist/package
-      - uses: actions/upload-artifact@v4
-        with:
-          name: package-${{ matrix.platform }}
-          path: dist/*.tar.gz
-          if-no-files-found: error
-  release:
-    needs: build
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
-      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: package-*
-          merge-multiple: true
-          path: dist
-      - name: Create draft release
+      MACOSX_DEPLOYMENT_TARGET: '11.0'
+      RELEASE_TAG: ${{ inputs.tag }}
+      PLATFORM: ${{ matrix.platform }}
+    defaults:
+      run:
         shell: bash
-        run: |
-          cd dist
-          sha256sum ./*.tar.gz > SHA256SUMS
-          gh release create "$RELEASE_TAG" ./*.tar.gz SHA256SUMS --verify-tag --draft --title "$RELEASE_TAG" --notes 'Validated release artifacts. See repository README for setup and dependency ownership.'
+        working-directory: client
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.tag }}
+        path: client
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.sha }}
+        path: automation
+    - uses: dtolnay/rust-toolchain@1.93.1
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Validate release version
+      run: python -c 'import os,tomllib; assert os.environ["RELEASE_TAG"] == "v" + tomllib.load(open("Cargo.toml","rb"))["package"]["version"]'
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: client
+        shared-key: release-cli-${{ matrix.platform }}
+        cache-on-failure: true
+    - name: Build standalone CLI with pinned static DuckDB
+      run: python ../automation/scripts/release/build.py --source . --platform "$PLATFORM"
+    - name: Package executable
+      run: |
+        mkdir -p dist/package
+        cp target/release/orchiddb target/release/BUILD.json LICENSE.md README.md dist/package/
+        cp -R examples dist/package/
+        tar -czf "dist/orchiddb-${RELEASE_TAG}-${PLATFORM}.tar.gz" -C dist/package .
+        rm -rf dist/package
+        git rev-parse HEAD > dist/SOURCE_COMMIT
+    - uses: actions/upload-artifact@v4
+      with:
+        name: package-${{ matrix.platform }}
+        path: client/dist/*
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 30

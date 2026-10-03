@@ -1,5 +1,4 @@
 name: Build
-on: [push, pull_request]
 permissions:
   contents: read
 jobs:
@@ -10,7 +9,10 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: 0
       RUST_MIN_STACK: 16777216
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo build --locked
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+    - uses: Swatinem/rust-cache@v2
+    - run: cargo build --locked
+on:
+  pull_request: {}
+  workflow_dispatch: {}

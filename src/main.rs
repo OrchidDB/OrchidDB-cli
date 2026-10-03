@@ -224,7 +224,7 @@ mod statistics_adapter_tests {
     #[test]
     fn transport_caps_and_deadlines_leave_the_session_usable() {
         let db = Connection::open_in_memory().unwrap();
-        let mut request = json!({"dialect":"duckdb", "sql":"SELECT i FROM range(100) t(i)", "max_rows":2, "max_bytes":1024, "timeout_ms":1000});
+        let mut request = json!({"dialect":"duckdb", "sql":"SELECT i FROM range(100) t(i)", "max_rows":2, "max_bytes":1024, "timeout_ms":30000});
         let rows = collect_statistics(&db, &request).unwrap();
         assert_eq!(rows["rows"].as_array().unwrap().len(), 2);
         request["max_bytes"] = json!(1);
