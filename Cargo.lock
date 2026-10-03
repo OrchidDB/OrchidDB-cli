@@ -2266,7 +2266,7 @@ dependencies = [
 [[package]]
 name = "orchiddb-client"
 version = "0.2.0"
-source = "git+https://github.com/OrchidDB/OrchidDB-rust.git?rev=83d6756f968f80b83d6b3c030723da5dcbba2e22#83d6756f968f80b83d6b3c030723da5dcbba2e22"
+source = "git+https://github.com/OrchidDB/OrchidDB-rust.git?rev=e05e2f29053e9634d59c93351b310755989e92a9#e05e2f29053e9634d59c93351b310755989e92a9"
 dependencies = [
  "arrow",
  "orchiddb",
@@ -2296,7 +2296,7 @@ checksum = "4be15186205eb60ddbdc2fb47cb25df472c7f399bbe119b68c0972b6b6dd46ea"
 dependencies = [
  "oxilangtag",
  "oxiri",
- "rand 0.8.8",
+ "rand 0.9.5",
  "thiserror",
 ]
 
