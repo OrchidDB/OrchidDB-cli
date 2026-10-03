@@ -1,6 +1,6 @@
 [package]
 name = "orchiddb-cli"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "OrchidDB graph query CLI with DuckDB and Iceberg"
 license = "GPL-3.0-only"
@@ -16,7 +16,7 @@ default = ["bundled"]
 bundled = ["duckdb/bundled"]
 
 [dependencies]
-orchiddb-client = { git = "https://github.com/OrchidDB/OrchidDB-rust.git", rev = "29e58ec592767bc21fa7ab0d36a7f3050e2c86ca", default-features = false }
+orchiddb-client = { git = "https://github.com/OrchidDB/OrchidDB-rust.git", rev = "83d6756f968f80b83d6b3c030723da5dcbba2e22", default-features = false }
 duckdb = "=1.10502.0"
 arrow = { version = "58.2.0", features = ["ipc", "prettyprint"] }
 serde_json = "1"

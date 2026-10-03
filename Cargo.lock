@@ -2217,8 +2217,8 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "orchiddb"
-version = "0.1.0"
-source = "git+https://github.com/OrchidDB/OrchidDB.git?rev=bd97a0f0f605e764abfa1439da489bc781b4e284#bd97a0f0f605e764abfa1439da489bc781b4e284"
+version = "0.2.0"
+source = "git+https://github.com/OrchidDB/OrchidDB.git?rev=ace2a8c5eb4dd193c5cefc3fdedc2ba873d4a139#ace2a8c5eb4dd193c5cefc3fdedc2ba873d4a139"
 dependencies = [
  "antlr4rust",
  "arrow",
@@ -2244,6 +2244,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "sha1",
  "sha2",
  "stacker",
  "thiserror",
@@ -2253,7 +2254,7 @@ dependencies = [
 
 [[package]]
 name = "orchiddb-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "arrow",
  "duckdb",
@@ -2264,8 +2265,8 @@ dependencies = [
 
 [[package]]
 name = "orchiddb-client"
-version = "0.1.0"
-source = "git+https://github.com/OrchidDB/OrchidDB-rust.git?rev=29e58ec592767bc21fa7ab0d36a7f3050e2c86ca#29e58ec592767bc21fa7ab0d36a7f3050e2c86ca"
+version = "0.2.0"
+source = "git+https://github.com/OrchidDB/OrchidDB-rust.git?rev=83d6756f968f80b83d6b3c030723da5dcbba2e22#83d6756f968f80b83d6b3c030723da5dcbba2e22"
 dependencies = [
  "arrow",
  "orchiddb",
@@ -2911,6 +2912,17 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "sha1"
+version = "0.10.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a978451301f4db1d02937a4ab3ccce137717b81826e79b7d49ffe3244a13c3b8"
+dependencies = [
+ "cfg-if",
+ "cpufeatures 0.2.17",
+ "digest",
 ]
 
 [[package]]
